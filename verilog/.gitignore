@@ -1,0 +1,10 @@
+log
+*.out
+*.bk
+*.swp
+*.swo
+*.swn
+*.swm
+*.vcd
+__pycache__
+build
