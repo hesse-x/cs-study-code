@@ -1,5 +1,3 @@
-// 工业级标准译码器模块：支持ALU/立即数指令，预留扩展接口
-// 指令格式约定（扩展友好型）：
 // code[31]    ：指令有效位（1=无效，0=有效）
 // code[30:29] ：指令类型（optype）
 //               00=ALU运算指令 | 01=立即数写入指令 
@@ -12,7 +10,7 @@
 // code[22:21] ：读寄存器地址2（raddr2）- ALU指令用
 // code[20:0]   ：指令参数（立即数/跳转地址/访存地址等）
 module decoder(
-    input clk,          // 保留你原有的clk接口（仅占位，内部无时序逻辑）
+    input clk,
     input rst_n,
     input [31:0] code,
     output reg alu_en,       // ALU运算指令使能
@@ -23,7 +21,6 @@ module decoder(
     // 写寄存器地址（ALU/立即数指令共用）
     output reg [1:0] waddr,
     output reg we,           // 通用写使能
-    // 新增：立即数指令相关信号（保留你原有的命名）
     output reg imm_en,       // 立即数写入指令使能
     output reg [31:0] imm_data // 立即数数据
 );
@@ -32,8 +29,6 @@ module decoder(
 localparam OPTYPE_ALU    = 2'b00;  // ALU指令（code[30:29]）
 localparam OPTYPE_IMM    = 2'b01;  // 立即数指令（code[30:29]）
 
-// 核心组合逻辑：工业级标准写法（先赋默认值→分层分支）
-// 注：保留clk入参但不接入敏感列表，完全兼容你原有接口
 always @(*) begin
     // ==============================================
     // 步骤1：赋默认值（杜绝锁存器，所有信号先清零）

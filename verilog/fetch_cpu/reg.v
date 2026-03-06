@@ -1,4 +1,3 @@
-// 寄存器堆：保留你原版实现
 module reg_file(
     input clk,                  // 时钟（仅写操作同步）
     input rst_n,                // 低有效复位

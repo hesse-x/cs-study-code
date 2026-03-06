@@ -34,9 +34,25 @@
 # Tmp vim files
 *.swp
 *.swo
+*.swn
+*.swm
 
 # CMake file
 build
 
 # Coredump files
 core
+
+# Verilog vcd files
+*.vcd
+
+# Python files
+__pycache__
+
+# Temp makefile
+Makefile
+
+# Log files
+log
+*.bk
+*.stash

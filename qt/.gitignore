@@ -1,8 +1,0 @@
-*.stash
-*.swp
-*.swo
-
-*.o
-Makefile
-
-build

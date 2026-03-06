@@ -6,14 +6,13 @@ module alu(
     output wire [31:0] ret // 运算结果（纯组合逻辑输出，wire类型）
 );
 
-// 方法1：用assign实现纯组合逻辑（最规范）
+// 用assign实现纯组合逻辑
 assign ret = (opcode == 2'b00) ? (lhs + rhs) :
              (opcode == 2'b01) ? (lhs - rhs) :
              (opcode == 2'b10) ? (lhs * rhs) :
              (opcode == 2'b11) ? ((rhs == 32'd0) ? 32'd0 : (lhs / rhs)) :
              32'd0;
 
-// 【备选写法】方法2：用always @(*) + 中间reg（等效，但输出仍为wire）
 // reg [31:0] ret_reg;
 // always @(*) begin
 //     case(opcode)
