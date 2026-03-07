@@ -10,35 +10,35 @@
 float hardware_exp_fp32(float x) {
     constexpr float INV_LN2_FP32 = 1.0 / std::log(2.0);
 #if P7
-    constexpr float a0 = 0.99999999999916556;
-    constexpr float a1 = 1.00000000076555073;
-    constexpr float a2 = 0.50000000248426679;
-    constexpr float a3 = 0.16666659932689812;
-    constexpr float a4 = 0.04166645696609354;
-    constexpr float a5 = 0.00833472714661210;
-    constexpr float a6 = 0.00139321868125452;
-    constexpr float a7 = 0.00019070911826619;
+    std::array<float, 8> a = {0.99999999999916556,
+     1.00000000076555073,
+     0.50000000248426679,
+     0.16666659932689812,
+     0.04166645696609354,
+     0.00833472714661210,
+     0.00139321868125452,
+     0.00019070911826619};
 #elif P6
-    constexpr float a0 = 0.99999999991756217;
-    constexpr float a1 = 1.00000003957572026;
-    constexpr float a2 = 0.50000001727171162;
-    constexpr float a3 = 0.16666406641144513;
-    constexpr float a4 = 0.04166607142225115;
-    constexpr float a5 = 0.00837589439356256;
-    constexpr float a6 = 0.00139568423807980;
+     std::array<float, 7> a = {0.99999999991756217,
+     1.00000003957572026,
+     0.50000001727171162,
+     0.16666406641144513,
+     0.04166607142225115,
+     0.00837589439356256,
+     0.00139568423807980};
 #elif P5
-    constexpr float a0 = 1.00000007604888363;
-    constexpr float a1 = 1.00000006517205731;
-    constexpr float a2 = 0.49998863555311329;
-    constexpr float a3 = 0.16666323982100059;
-    constexpr float a4 = 0.04191814639235722;
-    constexpr float a5 = 0.00838122890791970;
+     std::array<float, 6> a = {1.00000007604888363,
+     1.00000006517205731,
+     0.49998863555311329,
+     0.16666323982100059,
+     0.04191814639235722,
+     0.00838122890791970};
 #elif P4
-    constexpr float a0 = 1.00000015220043625;
-    constexpr float a1 = 0.99996209483137988;
-    constexpr float a2 = 0.49998357631730816;
-    constexpr float a3 = 0.16792467895356675;
-    constexpr float a4 = 0.04196016278783873;
+     std::array<float, 5> a = {1.00000015220043625,
+     0.99996209483137988,
+     0.49998357631730816,
+     0.16792467895356675,
+     0.04196016278783873};
 #endif
 
     // 步骤1：输入转换为FP32
@@ -53,21 +53,11 @@ float hardware_exp_fp32(float x) {
     std::cout << std::setprecision(15) << x << " " << k << " " << r << "\n";
 
     // 步骤3：霍纳法则计算多项式（全程FP32乘加）
-#if P7
-    float poly = a0 + r * (a1 + r * (a2 + r * (a3 + r * (a4 + r * (a5 + r * (a6 + r * a7))))));
-#elif P6
-    float poly = a0 + r * (a1 + r * (a2 + r * (a3 + 
-            r * (a4 + r * (a5 + r * a6)))));
-#elif P5
-    float poly = a0 + r * (a1 + r * (a2 + r * (a3 + r * (a4 + r * a5))));
-#elif P4
-    float poly = a0 + r * (a1 + r * (a2 + r * (a3 + r * a4)));
-#endif
-
+    float p = poly(r, a);
 
     // 步骤4：指数位偏移（硬件级位操作）
     // 将poly转为32位无符号整数
-    uint32_t uint_val = *reinterpret_cast<uint32_t*>(&poly);
+    uint32_t uint_val = *reinterpret_cast<uint32_t*>(&p);
     // 提取指数位（FP32：第23~30位）
     uint32_t exponent = (uint_val & 0x7F800000) >> 23;
     // 计算新指数（偏移k，限制在有效范围）
@@ -78,7 +68,7 @@ float hardware_exp_fp32(float x) {
     // 转回FP32
     float result = *reinterpret_cast<float*>(&new_uint);
 
-    std::cout << std::setprecision(15) << result << " " << poly << "\n";
+    std::cout << std::setprecision(15) << result << " " << p << "\n";
 
     return result;
 }
