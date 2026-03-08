@@ -18,4 +18,11 @@ void print(std::vector<T> val) {
     std::cout << "\n";
 }
 
-
+template <size_t PN>
+float poly(float x, std::array<float, PN> a) {
+  float res = a[PN - 1];
+  for (int i = PN - 1; i > 0; i--) {
+    res = x * res + a[i - 1];
+  }
+  return res;
+}

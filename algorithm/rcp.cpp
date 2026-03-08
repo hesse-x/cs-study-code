@@ -70,6 +70,11 @@ float hardware_rcp_fp32(float x) {
                               0.98875150382521837,
                               -0.11091851798237302};
 #elif P4
+    std::array<float, 5> a = {3.57842719673198539,
+     -5.04503538170960120,
+     3.50305864096220221,
+     -1.19828739232705250,
+     0.16162029869395844};
 #endif
 
     auto [mantissa, exponent] = extract_fp32_mantissa_exponent(x);
@@ -82,7 +87,7 @@ float hardware_rcp_fp32(float x) {
     float p = poly(r, a);
     float result = restore_reciprocal(p, exponent);
 
-    result = 2 * result - x * result * result;
+    result = result * (2 - x * result);
     std::cout << "r, p: "<< std::setprecision(15) << result << " " << p << "\n";
 
     return result;

@@ -34,11 +34,11 @@ float hardware_exp_fp32(float x) {
      0.04191814639235722,
      0.00838122890791970};
 #elif P4
-     std::array<float, 5> a = {1.00000015220043625,
-     0.99996209483137988,
-     0.49998357631730816,
-     0.16792467895356675,
-     0.04196016278783873};
+     std::array<float, 5> a = {1.00000000235365727,
+          0.99999764950312364,
+          0.49999898142455335,
+          0.16697969509955338,
+          0.04173970528452483};
 #endif
 
     // 步骤1：输入转换为FP32
@@ -53,7 +53,8 @@ float hardware_exp_fp32(float x) {
     std::cout << std::setprecision(15) << x << " " << k << " " << r << "\n";
 
     // 步骤3：霍纳法则计算多项式（全程FP32乘加）
-    float p = poly(r, a);
+    float p = poly(r / 2, a);
+    p *= p;
 
     // 步骤4：指数位偏移（硬件级位操作）
     // 将poly转为32位无符号整数
@@ -67,6 +68,8 @@ float hardware_exp_fp32(float x) {
     uint32_t new_uint = (uint_val & 0x807FFFFF) | (static_cast<uint32_t>(new_exponent) << 23);
     // 转回FP32
     float result = *reinterpret_cast<float*>(&new_uint);
+//    result = result * (2 + x - result);
+//    result = result * (x - result  + 2 + (result - 1) * (result - 1) / 2);
 
     std::cout << std::setprecision(15) << result << " " << p << "\n";
 
