@@ -88,6 +88,7 @@ float hardware_rcp_fp32(float x) {
     float result = restore_reciprocal(p, exponent);
 
     result = result * (2 - x * result);
+    result = result * (2 - x * result);
     std::cout << "r, p: "<< std::setprecision(15) << result << " " << p << "\n";
 
     return result;
