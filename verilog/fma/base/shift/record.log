@@ -1,0 +1,8 @@
+shiftc_4bit  => 0(0011)
+shiftc_8bit  => 0(11111111)
+
+// ----------
+shift_4bit   => 3
+shift_8bit   => 4
+shift_25bit  => 5
+shift_48bit  => 6

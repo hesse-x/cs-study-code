@@ -1,0 +1,13 @@
+addc_4bit  => 2(0011)
+addc_4bit  => 3(1111)
+addc_8bit  => 5(11111100)
+addc_8bit  => 5(10000000)
+// ----------
+add_4bit   => 4
+add_8bit   => 6
+add_25bit  => 9
+add_48bit  => 11
+sub_4bit   => 4
+sub_8bit   => 6
+sub_25bit  => 9
+sub_48bit  => 11
