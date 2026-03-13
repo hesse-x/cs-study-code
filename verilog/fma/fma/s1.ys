@@ -1,0 +1,18 @@
+# 1. 读取Verilog文件
+# read_verilog addf.v find_first_1.v splitf.v
+# read_verilog mulf.v
+read_verilog -sv common.sv fma_s1.sv splitf.sv
+# read_verilog find_first_1.v
+# 2. 综合为门级电路（针对通用工艺库，无工艺库也可生成抽象门级网表）
+
+flatten     # 拍扁层级，方便全局优化
+alumacc     # 提取算术单元
+techmap     # 通用映射
+opt
+synth -top fma_s1
+# 3. 输出门级网表（JSON格式，易解析）
+write_json test_netlist.json
+# 4. （可选）直接打印电路统计信息（包含门数量、层级）
+stat
+
+ltp

@@ -1,0 +1,5 @@
+find_rist1_8bit  => 3
+find_rist1_16bit => 4
+find_rist1_25bit => 5
+find_rist1_32bit => 5
+find_rist1_64bit => 6

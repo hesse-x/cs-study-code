@@ -1,0 +1,11 @@
+mulc_4bit  => 2(0011)
+mulc_4bit  => 1(1100)
+mulc_4bit  => 5(1111)
+mulc_8bit  => 10(11111111)
+mulc_8bit  => 9(11111100)
+mulc_8bit  => 1(10000000)
+// ----------
+mul_4bit   => 6
+mul_8bit   => 11
+mul_25bit  => 22
+mul_48bit  => 28
