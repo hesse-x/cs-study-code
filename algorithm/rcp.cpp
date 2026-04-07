@@ -40,7 +40,7 @@ float restore_reciprocal(float reciprocal_m, uint8_t orig_exp_bits) {
 
     return *reinterpret_cast<float*>(&new_raw);
 }
-
+#if 0
 float hardware_rcp_fp32(float x) {
 #if P7
   std::array<float, 8> a = {5.69974746470290938,
@@ -90,4 +90,23 @@ float hardware_rcp_fp32(float x) {
 
     return result;
 }
-
+#else
+static float mask_last_15bit(float x) {
+  uint32_t raw = *reinterpret_cast<const uint32_t*>(&x);
+  // 23 - 15 = 8
+  uint32_t mantissa_raw = (raw & 0xFFFF8000); // 指数位设为127
+  return *reinterpret_cast<float*>(&mantissa_raw);
+}
+float hardware_rcp_fp32(float x) {
+  auto [mantissa, exponent] = extract_fp32_mantissa_exponent(x);
+  float r = mask_last_15bit(mantissa);
+  double k = -1.0 / (double(r) * double(r));
+  double b = 1.0 / double(r) - k * r;
+  float p = k * mantissa + b;
+//  float p = 1.0 / double(r);
+  float result = restore_reciprocal(p, exponent);
+  result = result * (2 - x * result);
+//  result = result * (2 - x * result);
+  return result;
+}
+#endif
