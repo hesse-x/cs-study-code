@@ -4,6 +4,7 @@ module tb_fma;
 
     // 只有输入：a b c 三个 32bit 浮点数
     reg [31:0] a, b, c;
+    reg [1:0] inv;
 
     // 只有输出：计算结果 ret
     wire [31:0] ret;
@@ -11,6 +12,7 @@ module tb_fma;
     // 纯组合逻辑 FMA 实例化（只剩 a b c 输入 + ret 输出）
     fma u_dut (
         .a(a),
+        .inv(inv),
         .b(b),
         .c(c),
         .ret(ret)
@@ -18,12 +20,14 @@ module tb_fma;
 
     // 测试任务：赋值 → 等待组合逻辑稳定 → 打印结果
     task test_fma(
-        input [31:0] va, vb, vc
+        input [31:0] va, vb, vc,
+        input [1:0] vinv
     );
         begin
             a = va;
             b = vb;
             c = vc;
+            inv = vinv;
             #1;  // 等待 1ns，足够你的 46 级逻辑稳定
             $display("a=%08h | b=%08h | c=%08h | ret=%08h", a, b, c, ret);
         end
@@ -34,8 +38,13 @@ module tb_fma;
         $display("\n===== 纯组合逻辑 FMA 浮点乘加测试 =====\n");
 
         // 1.0 * 2.5 + 1.0 = 3.5
-        test_fma(32'h3f800000, 32'h40200000, 32'h3f800000);
+        test_fma(32'h3f800000, 32'h40200000, 32'h3f800000, 2'b00);
 
+        // 1.0 * 2.5 - 1.0 = 1.5
+        test_fma(32'h3f800000, 32'h40200000, 32'h3f800000, 2'b01);
+
+        // 1.0 * 1.0 - 2.5 = -1.5
+        test_fma(32'h3f800000, 32'h3f800000, 32'h40200000, 2'b01);
         // 0.5 * 最小非规格化数 + 0
 //        test_fma(32'h3f000000, 32'h00000001, 32'h00000000);
 //
