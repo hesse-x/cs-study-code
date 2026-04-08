@@ -56,3 +56,6 @@ Makefile
 log
 *.bk
 *.stash
+
+# Verilator file
+obj_dir

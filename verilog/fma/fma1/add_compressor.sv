@@ -1,9 +1,9 @@
-module add_full(
-    input [47:0] a,
-    input [47:0] b,
-    input [47:0] cin,
-    output [47:0] sum,
-    output [47:0] cout
+module add_compressor # (parameter WIDTH = 48) (
+    input [WIDTH-1:0] a,
+    input [WIDTH-1:0] b,
+    input [WIDTH-1:0] cin,
+    output [WIDTH-1:0] sum,
+    output [WIDTH-1:0] cout
 );
 assign sum  = a ^ b ^ cin;
 assign cout = ((a & b) | (a & cin) | (b & cin)) << 1;
@@ -16,14 +16,7 @@ module part_prod # (
   input b,
   output [47:0] ret
 );
-wire [47:0] padded_a;
-assign padded_a = {'0, a};
-wire [47:0] padded_b;
-assign padded_b = {24'b0, {24{b}}};
-wire [47:0] prod;
-assign prod = padded_a & padded_b;
-assign ret = prod << shift;
-
+assign ret = ({24'b0, a} & {24'b0, {24{b}}}) << shift;
 endmodule
 
 module prod(
@@ -55,7 +48,7 @@ generate
           .b(b[3*i+2]),
           .ret(add_c[i])
       );
-      add_full u_add_r0(
+      add_compressor u_add_r0(
           .a(add_a[i]),
           .b(add_b[i]),
           .cin(add_c[i]),
@@ -68,7 +61,7 @@ endgenerate
 wire [47:0] r1 [10:0];
 generate
     for (i=0; i<5; i=i+1) begin : encode_loop1
-      add_full u_add_r1(
+      add_compressor u_add_r1(
           .a   (r0[i*3]),
           .b   (r0[i*3+1]),
           .cin (r0[i*3+2]),
@@ -82,7 +75,7 @@ assign r1[10] = r0[15];
 wire [47:0] r2 [7:0];
 generate
     for (i=0; i<3; i=i+1) begin : encode_loop2
-      add_full u_add_r2(
+      add_compressor u_add_r2(
           .a   (r1[i*3]),
           .b   (r1[i*3+1]),
           .cin (r1[i*3+2]),
@@ -97,7 +90,7 @@ assign r2[7] = r1[10];
 wire [47:0] r3 [5:0];
 generate
     for (i=0; i<2; i=i+1) begin : encode_loop3
-      add_full u_add_r3(
+      add_compressor u_add_r3(
           .a   (r2[i*3]),
           .b   (r2[i*3+1]),
           .cin (r2[i*3+2]),
@@ -112,7 +105,7 @@ assign r3[5] = r2[7];
 wire [47:0] r4 [3:0];
 generate
     for (i=0; i<2; i=i+1) begin : encode_loop4
-      add_full u_add_r4(
+      add_compressor u_add_r4(
           .a   (r3[i*3]),
           .b   (r3[i*3+1]),
           .cin (r3[i*3+2]),
@@ -123,7 +116,7 @@ generate
 endgenerate
 
 wire [47:0] r5 [2:0];
-add_full u_add_r5(
+add_compressor u_add_r5(
     .a   (r4[0]),
     .b   (r4[1]),
     .cin (r4[2]),
@@ -132,7 +125,7 @@ add_full u_add_r5(
 );
 assign r5[2] = r4[3];
 
-add_full u_add_r6(
+add_compressor u_add_r6(
     .a   (r5[0]),
     .b   (r5[1]),
     .cin (r5[2]),
